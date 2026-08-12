@@ -6,7 +6,7 @@ const ROLE_PREFIXES: Record<string, string> = {
   "/dashboard/admin": "ADMIN",
 };
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const matchedPrefix = Object.keys(ROLE_PREFIXES).find((prefix) =>
