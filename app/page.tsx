@@ -1,4 +1,4 @@
-export default async function HomePa() {
+export default async function HomePage() {
   const response = await fetch(
     "https://ph-l2-a4-fix-it-now-backend-project-drab.vercel.app/api/services",
   );
