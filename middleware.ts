@@ -17,8 +17,8 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const token = request.cookies.get("accessToken")?.value;
-  const role = request.cookies.get("refreshToken")?.value;
+  const token = request.cookies.get("fixitnow_token")?.value;
+  const role = request.cookies.get("fixitnow_role")?.value;
 
   if (!token) {
     const loginUrl = new URL("/login", request.url);
