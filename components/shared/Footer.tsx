@@ -10,13 +10,16 @@ export default function Footer() {
             <Wrench className="h-4 w-4 text-primary-600" />
             FixItNow
           </div>
-          <p>© {new Date().getFullYear()} FixItNow. Your trusted home service platform.</p>
+          <p>
+            © {new Date().getFullYear()} FixItNow. Your trusted home service
+            platform.
+          </p>
           <div className="flex gap-4">
             <Link href="/services" className="hover:text-primary-600">
               Services
             </Link>
-            <Link href="/login" className="hover:text-primary-600">
-              Login
+            <Link href="/about" className="hover:text-primary-600">
+              About Us
             </Link>
           </div>
         </div>

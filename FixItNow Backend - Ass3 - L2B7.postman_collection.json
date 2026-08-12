@@ -1,0 +1,1437 @@
+{
+  "info": {
+    "_postman_id": "4bb3bd15-f038-429a-b64a-5c176ceb8953",
+    "name": "FixItNow Backend - Ass3 - L2B7",
+    "description": "API collection for FixItNow — Home Service Platform backend (Customer / Technician / Admin).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "31131565"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register - Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Atiq Customer 1\",\n    \"email\": \"customer11@gmail.com\",\n    \"password\": \"123456\",\n    \"role\": \"CUSTOMER\"\n}\n\n// {\n//     \"name\": \"John Customer\",\n//     \"email\": \"john@gmail.com\",\n//     \"password\": \"123456\",\n//     \"role\": \"CUSTOMER\"\n// }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register - Technician",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Demo Technician\",\n    \"email\": \"technician11@gmail.com\",\n    \"password\": \"123456\",\n    \"role\": \"TECHNICIAN\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Register - Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Atiq Admin\",\n    \"email\": \"admin@gmail.com\",\n    \"password\": \"admin12345\",\n    \"role\": \"ADMIN\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const data = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', data.data.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', data.data.refreshToken);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [""],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"customer11@gmail.com\",\n    \"password\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Technician",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const data = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', data.data.accessToken);",
+                  "    pm.collectionVariables.set('refreshToken', data.data.refreshToken);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"technician11@gmail.com\",\n    \"password\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login - Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const data = pm.response.json();",
+                  "    pm.collectionVariables.set('admin_token', data.data.token);",
+                  "    pm.collectionVariables.set('admin_id', data.data.user.id);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"fixitnow_admin@gmail.com\",\n    \"password\": \"adminpassword123\"\n}\n// {\n//     \"email\": \"admin@gmail.com\",\n//     \"password\": \"admin12345\"\n// }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current User (Me)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token - Customer/Technician/Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const data = pm.response.json();",
+                  "    pm.collectionVariables.set('accessToken', data.data.accessToken);",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/refresh-token",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "refresh-token"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Get all users - Admin",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/admin/users",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update user status (ban/unban) - Admin",
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"activeStatus\":\"ACTIVE\"\r\n}\r\n\r\n// {\r\n//     \"activeStatus\":\"BLOCKED\"\r\n// }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/admin/users/db24b753-d337-4e97-9cf4-25cacb5399e7",
+              "host": ["{{base_url}}"],
+              "path": [
+                "api",
+                "admin",
+                "users",
+                "db24b753-d337-4e97-9cf4-25cacb5399e7"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all bookings - Admin",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/admin/bookings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "bookings"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all categories - Admin",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/admin/categories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "admin", "categories"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Category - Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// if (pm.response.code === 201) {",
+                  "//     pm.collectionVariables.set('categoryId', pm.response.json().data.id);",
+                  "// }"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"categoryName\": \"Pro Painting\",\n    \"description\": \"Interior and exterior painting services\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/categories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "categories"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "TechnicianProfile",
+      "item": [
+        {
+          "name": "technicianProfileCreate - Technician",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{technician_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skills\": \"Plumbing, Electrical\",\n  \"experience\": 5,\n  \"hourlyRate\": 25,\n  \"location\":\"Rajshahi, Bangladesh\",\n  \"isAvailable\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/technicians/profile",
+              "host": ["{{base_url}}"],
+              "path": ["api", "technicians", "profile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "technicianProfile view - Technician",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{technician_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/api/technicians/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "technicians", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update technician profile - Technician",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{technician_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skills\": \"Plumbing, Electrical\",\n  \"experience\": 5,\n  \"hourlyRate\": 25,\n  \"isAvailable\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/technicians/profile",
+              "host": ["{{base_url}}"],
+              "path": ["api", "technicians", "profile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update availability slots - Technician",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{technician_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"availabilitySlots\": [\n    { \"start\": \"2026-08-06T09:00:00Z\", \"end\": \"2026-08-06T12:00:00Z\", \"note\": \"Morning shift\" },\n    { \"start\": \"2026-08-07T14:00:00Z\", \"end\": \"2026-08-07T18:00:00Z\", \"note\": \"Afternoon\" }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/technicians/availability",
+              "host": ["{{base_url}}"],
+              "path": ["api", "technicians", "availability"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get technician's bookings - Technician",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/api/technicians/bookings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "technicians", "bookings"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update booking status (accept/decline/complete) - Technician",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"status\": \"ACCEPTED\"\r\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bookings/9b6752bd-9e9a-43d6-b084-7424339e16d9",
+              "host": ["{{base_url}}"],
+              "path": [
+                "api",
+                "bookings",
+                "9b6752bd-9e9a-43d6-b084-7424339e16d9"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update booking status check (accept/decline/complete) - (Technician)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{technician_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"COMPLETED\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bookings/9b6752bd-9e9a-43d6-b084-7424339e16d9",
+              "host": ["{{base_url}}"],
+              "path": [
+                "api",
+                "bookings",
+                "9b6752bd-9e9a-43d6-b084-7424339e16d9"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get all technicians with filters - Public",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer ",
+                "disabled": true
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Leak Pipe Repair\",\n    \"description\": \"Fixing leaking pipes and joints\",\n    \"categoryId\": \"5898232a-1756-4711-af85-1e192b662a01\",\n    \"basePrice\": 45.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/technicians?available=true",
+              "host": ["{{base_url}}"],
+              "path": ["api", "technicians"],
+              "query": [
+                {
+                  "key": "location",
+                  "value": "rajshahi",
+                  "disabled": true
+                },
+                {
+                  "key": "serviceType",
+                  "value": "Painting",
+                  "disabled": true
+                },
+                {
+                  "key": "minRate",
+                  "value": "10",
+                  "disabled": true
+                },
+                {
+                  "key": "maxRate",
+                  "value": "50",
+                  "disabled": true
+                },
+                {
+                  "key": "rating",
+                  "value": "4",
+                  "disabled": true
+                },
+                {
+                  "key": "skills",
+                  "value": "electrical",
+                  "disabled": true
+                },
+                {
+                  "key": "available",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get technician profile with reviews - Public",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": ""
+            },
+            "url": {
+              "raw": "{{base_url}}/api/technicians/83872c60-c78b-4930-abb5-57307427c9fd",
+              "host": ["{{base_url}}"],
+              "path": [
+                "api",
+                "technicians",
+                "83872c60-c78b-4930-abb5-57307427c9fd"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Category",
+      "item": [
+        {
+          "name": "Create Category (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// if (pm.response.code === 201) {",
+                  "//     pm.collectionVariables.set('categoryId', pm.response.json().data.id);",
+                  "// }"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"categoryName\": \"Painting\",\n    \"description\": \"Interior and exterior painting services\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/categories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "categories"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Service Categories (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/categories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "categories"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Service",
+      "item": [
+        {
+          "name": "Create Service (Technician)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// if (pm.response.code === 201) {",
+                  "//     pm.collectionVariables.set('serviceId', pm.response.json().data.id);",
+                  "// }"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{technician_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"serviceName\": \"Leak Pipe Repair\",\n    \"description\": \"Fixing leaking pipes and joints\",\n    \"categoryId\": \"79aceb3b-dc72-435a-a4c4-aadbb22ae820\",\n    \"basePrice\": 45.00\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/services",
+              "host": ["{{base_url}}"],
+              "path": ["api", "services"]
+            },
+            "description": "Requires a TechnicianProfile to already exist for the logged-in technician (create via Prisma Studio for now)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Services (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/services",
+              "host": ["{{base_url}}"],
+              "path": ["api", "services"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Services with filter (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/services?minPrice=10&maxPrice=50",
+              "host": ["{{base_url}}"],
+              "path": ["api", "services"],
+              "query": [
+                {
+                  "key": "type",
+                  "value": "painting",
+                  "disabled": true
+                },
+                {
+                  "key": "location",
+                  "value": "Rajshahi",
+                  "disabled": true
+                },
+                {
+                  "key": "rating",
+                  "value": "4",
+                  "disabled": true
+                },
+                {
+                  "key": "minPrice",
+                  "value": "10"
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "50"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Services by Category (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/services?categoryId=",
+              "host": ["{{base_url}}"],
+              "path": ["api", "services"],
+              "query": [
+                {
+                  "key": "categoryId",
+                  "value": ""
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Booking",
+      "item": [
+        {
+          "name": "Create new booking (Customer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// if (pm.response.code === 201) {",
+                  "//     pm.collectionVariables.set('bookingId', pm.response.json().data.id);",
+                  "// }"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"technicianId\": \"cb54f241-882b-426a-9068-db5762b646ab\",\n    \"serviceId\": \"d1d0dbff-c38a-4489-bd84-ab0ad0341d0e\",\n    \"scheduledDate\": \"2026-08-05T10:00:00.000Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bookings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookings"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My(user's) Bookings (Customer)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bookings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "bookings"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Booking details By Id (Custormer)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/bookings/b896dd1b-94fa-4f74-ab76-b78f85aa7e3e",
+              "host": ["{{base_url}}"],
+              "path": [
+                "api",
+                "bookings",
+                "b896dd1b-94fa-4f74-ab76-b78f85aa7e3e"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Booking Status - Accept (Technician)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"ACCEPTED\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bookings/0f26ec80-198a-46be-8c16-b4f77d8a9ca8",
+              "host": ["{{base_url}}"],
+              "path": [
+                "api",
+                "bookings",
+                "0f26ec80-198a-46be-8c16-b4f77d8a9ca8"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Booking Status - Decline (Technician)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"DECLINED\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bookings/b896dd1b-94fa-4f74-ab76-b78f85aa7e3e",
+              "host": ["{{base_url}}"],
+              "path": [
+                "api",
+                "bookings",
+                "b896dd1b-94fa-4f74-ab76-b78f85aa7e3e"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Booking Status - Completed (Technician)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"status\": \"COMPLETED\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/bookings/0f26ec80-198a-46be-8c16-b4f77d8a9ca8",
+              "host": ["{{base_url}}"],
+              "path": [
+                "api",
+                "bookings",
+                "0f26ec80-198a-46be-8c16-b4f77d8a9ca8"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Payment",
+      "item": [
+        {
+          "name": "Create Payment Intent (Customer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// if (pm.response.code === 201) {",
+                  "//     const data = pm.response.json().data;",
+                  "//     pm.collectionVariables.set('transactionId', data.payment.transactionId);",
+                  "// }"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"bookingId\": \"b896dd1b-94fa-4f74-ab76-b78f85aa7e3e\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/payments/create",
+              "host": ["{{base_url}}"],
+              "path": ["api", "payments", "create"]
+            },
+            "description": "Booking must be in ACCEPTED status. Returns a Stripe clientSecret."
+          },
+          "response": []
+        },
+        {
+          "name": "Payment Checkout (Customer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// if (pm.response.code === 201) {",
+                  "//     const data = pm.response.json().data;",
+                  "//     pm.collectionVariables.set('transactionId', data.payment.transactionId);",
+                  "// }"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"bookingId\": \"9b6752bd-9e9a-43d6-b084-7424339e16d9\",\n    \"amount\":60,\n    \"currency\":\"usd\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/payments/checkout",
+              "host": ["{{base_url}}"],
+              "path": ["api", "payments", "checkout"],
+              "query": [
+                {
+                  "key": "bookingId",
+                  "value": "b896dd1b-94fa-4f74-ab76-b78f85aa7e3e",
+                  "disabled": true
+                },
+                {
+                  "key": "amount",
+                  "value": "40",
+                  "disabled": true
+                },
+                {
+                  "key": "currency",
+                  "value": "usd",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Booking must be in ACCEPTED status. Returns a Stripe clientSecret."
+          },
+          "response": []
+        },
+        {
+          "name": "Confirm Payment (Customer)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"transactionId\": \"pi_3U18VaGLtP0u4O7b0MedNmQz\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/payments/confirm",
+              "host": ["{{base_url}}"],
+              "path": ["api", "payments", "confirm"]
+            },
+            "description": "In production this happens automatically via the Stripe webhook. This manual endpoint is useful for local testing without the Stripe CLI."
+          },
+          "response": []
+        },
+        {
+          "name": "Failed Payment (Customer)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customer_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"transactionId\": \"pi_3U18VaGLtP0u4O7b0MedNmQz\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/payments/fail",
+              "host": ["{{base_url}}"],
+              "path": ["api", "payments", "fail"]
+            },
+            "description": "In production this happens automatically via the Stripe webhook. This manual endpoint is useful for local testing without the Stripe CLI."
+          },
+          "response": []
+        },
+        {
+          "name": "Get My(user's) Payment History (Customer)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/payments",
+              "host": ["{{base_url}}"],
+              "path": ["api", "payments"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Mu(user's) Single Payment details (Customer)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/payments/a1aadac1-bbaa-4dd4-98d9-a705eadc51d2",
+              "host": ["{{base_url}}"],
+              "path": [
+                "api",
+                "payments",
+                "a1aadac1-bbaa-4dd4-98d9-a705eadc51d2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Stripe Webhook (reference only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Stripe-Signature",
+                "value": "t=timestamp,v1=signature"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"note\": \"This endpoint is called by Stripe itself, not manually via Postman. Use the Stripe CLI (`stripe trigger payment_intent.succeeded`) to test it.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/payments/webhook",
+              "host": ["{{base_url}}"],
+              "path": ["api", "payments", "webhook"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Review",
+      "item": [
+        {
+          "name": "Create Review (Customer)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{accessToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"bookingId\": \"9b6752bd-9e9a-43d6-b084-7424339e16d9\",\n    \"rating\": 4,\n    \"comment\": \"Great job, fixed the leak quickly!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/reviews",
+              "host": ["{{base_url}}"],
+              "path": ["api", "reviews"]
+            },
+            "description": "Booking status must be COMPLETED."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "https://ph-l2-a4-fix-it-now-backend-project-drab.vercel.app"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    }
+  ]
+}

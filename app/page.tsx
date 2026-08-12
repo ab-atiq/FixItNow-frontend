@@ -4,8 +4,17 @@ import { Button } from "@/components/ui/Button";
 import ServiceCard from "@/components/modules/services/ServiceCard";
 import type { ApiResponse, Service } from "@/types";
 
+function resolveApiUrl() {
+  const raw =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://ph-l2-a4-fix-it-now-backend-project-drab.vercel.app/api";
+  const normalized = raw.replace(/\/+$/, "");
+
+  return normalized.endsWith("/api") ? normalized : normalized + "/api";
+}
+
 async function getFeaturedServices(): Promise<Service[]> {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://ph-l2-a4-fix-it-now-backend-project-drab.vercel.app/api";
+  const API_URL = resolveApiUrl();
   try {
     const res = await fetch(API_URL + "/services", { cache: "no-store" });
     if (!res.ok) return [];

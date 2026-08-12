@@ -7,7 +7,38 @@ import { api, ApiError } from "@/lib/api";
 import { setAuth, dashboardPathForRole } from "@/lib/auth";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import type { LoginResponseData } from "@/types";
+import type { ApiResponse, LoginResponseData, User } from "@/types";
+
+type LoginApiData = LoginResponseData & {
+  accessToken?: string;
+  refreshToken?: string;
+};
+
+async function getCurrentUser(token: string): Promise<User> {
+  const response = await fetch("/api-proxy/auth/me", {
+    method: "GET",
+    headers: {
+      Authorization: "Bearer " + token,
+    },
+    cache: "no-store",
+  });
+
+  let payload: ApiResponse<User> | null = null;
+  try {
+    payload = (await response.json()) as ApiResponse<User>;
+  } catch {
+    payload = null;
+  }
+
+  if (!response.ok || !payload?.data) {
+    throw new ApiError(
+      response.status || 0,
+      payload?.message || "Unable to load user profile",
+    );
+  }
+
+  return payload.data;
+}
 
 export default function LoginForm() {
   const router = useRouter();
@@ -22,13 +53,28 @@ export default function LoginForm() {
     setError("");
     setLoading(true);
     try {
-      const data = await api.post<LoginResponseData>("/auth/login", { email, password }, { auth: false });
-      setAuth(data.token, data.user);
+      const data = await api.post<LoginApiData>(
+        "/auth/login",
+        { email, password },
+        { auth: false },
+      );
+      const token = data.token || data.accessToken;
+
+      if (!token) {
+        throw new ApiError(
+          500,
+          "Login response did not include an access token",
+        );
+      }
+
+      const user = data.user || (await getCurrentUser(token));
+      setAuth(token, user);
       toast.success("Logged in successfully");
       const redirect = searchParams.get("redirect");
-      router.push(redirect || dashboardPathForRole(data.user.role));
+      router.push(redirect || dashboardPathForRole(user.role));
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : "Something went wrong";
+      const message =
+        err instanceof ApiError ? err.message : "Something went wrong";
       setError(message);
       toast.error(message);
     } finally {

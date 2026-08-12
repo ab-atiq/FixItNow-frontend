@@ -1,7 +1,16 @@
 import { getToken, clearAuth } from "@/lib/auth";
 import type { ApiResponse } from "@/types";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://ph-l2-a4-fix-it-now-backend-project-drab.vercel.app/api";
+function resolveApiUrl() {
+  const raw =
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://ph-l2-a4-fix-it-now-backend-project-drab.vercel.app/api";
+  const normalized = raw.replace(/\/+$/, "");
+
+  return normalized.endsWith("/api") ? normalized : normalized + "/api";
+}
+
+const API_URL = typeof window === "undefined" ? resolveApiUrl() : "/api-proxy";
 
 export class ApiError extends Error {
   statusCode: number;
@@ -21,7 +30,10 @@ type RequestOptions = {
   cache?: RequestCache;
 };
 
-async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<T> {
+async function request<T>(
+  endpoint: string,
+  options: RequestOptions = {},
+): Promise<T> {
   const { method = "GET", body, auth = true, cache } = options;
 
   const headers: Record<string, string> = {
@@ -44,7 +56,10 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
       cache: cache || "no-store",
     });
   } catch (err) {
-    throw new ApiError(0, "Unable to reach the server. Is the backend running?");
+    throw new ApiError(
+      0,
+      "Unable to reach the server. Is the backend running?",
+    );
   }
 
   let payload: ApiResponse<T> | any = null;
@@ -59,22 +74,36 @@ async function request<T>(endpoint: string, options: RequestOptions = {}): Promi
       clearAuth();
     }
     const message = (payload && payload.message) || "Request failed";
-    throw new ApiError(response.status, message, payload && payload.errorDetails);
+    throw new ApiError(
+      response.status,
+      message,
+      payload && payload.errorDetails,
+    );
   }
 
   return (payload && payload.data) as T;
 }
 
 export const api = {
-  get: <T>(endpoint: string, options?: Omit<RequestOptions, "method" | "body">) =>
-    request<T>(endpoint, { ...options, method: "GET" }),
+  get: <T>(
+    endpoint: string,
+    options?: Omit<RequestOptions, "method" | "body">,
+  ) => request<T>(endpoint, { ...options, method: "GET" }),
 
-  post: <T>(endpoint: string, body?: unknown, options?: Omit<RequestOptions, "method" | "body">) =>
-    request<T>(endpoint, { ...options, method: "POST", body }),
+  post: <T>(
+    endpoint: string,
+    body?: unknown,
+    options?: Omit<RequestOptions, "method" | "body">,
+  ) => request<T>(endpoint, { ...options, method: "POST", body }),
 
-  patch: <T>(endpoint: string, body?: unknown, options?: Omit<RequestOptions, "method" | "body">) =>
-    request<T>(endpoint, { ...options, method: "PATCH", body }),
+  patch: <T>(
+    endpoint: string,
+    body?: unknown,
+    options?: Omit<RequestOptions, "method" | "body">,
+  ) => request<T>(endpoint, { ...options, method: "PATCH", body }),
 
-  del: <T>(endpoint: string, options?: Omit<RequestOptions, "method" | "body">) =>
-    request<T>(endpoint, { ...options, method: "DELETE" }),
+  del: <T>(
+    endpoint: string,
+    options?: Omit<RequestOptions, "method" | "body">,
+  ) => request<T>(endpoint, { ...options, method: "DELETE" }),
 };
