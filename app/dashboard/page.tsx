@@ -1,8 +1,10 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { getRoleFromAccessToken } from "@/lib/auth";
 
 export default async function DashboardPage() {
-  const role = (await cookies()).get("fixitnow_role")?.value;
+  const accessToken = (await cookies()).get("fixitnow_access_token")?.value;
+  const role = getRoleFromAccessToken(accessToken);
 
   if (role === "ADMIN") {
     redirect("/dashboard/admin");

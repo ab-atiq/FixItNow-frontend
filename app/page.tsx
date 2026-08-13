@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { ArrowRight, ShieldCheck, Clock, Star } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import ServiceCard from "@/components/modules/services/ServiceCard";
+import { getRoleFromAccessToken } from "@/lib/auth";
 import type { ApiResponse, Service } from "@/types";
 
 function resolveApiUrl() {
@@ -28,7 +29,8 @@ async function getFeaturedServices(): Promise<Service[]> {
 
 export default async function HomePage() {
   const services = await getFeaturedServices();
-  const userRole = (await cookies()).get("fixitnow_role")?.value;
+  const accessToken = (await cookies()).get("fixitnow_access_token")?.value;
+  const userRole = getRoleFromAccessToken(accessToken);
   const isTechnician = userRole === "TECHNICIAN";
 
   return (

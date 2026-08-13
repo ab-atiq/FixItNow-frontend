@@ -58,17 +58,18 @@ export default function LoginForm() {
         { email, password },
         { auth: false },
       );
-      const token = data.token || data.accessToken;
+      const accessToken = data.accessToken || data.token;
+      const refreshToken = data.refreshToken;
 
-      if (!token) {
+      if (!accessToken) {
         throw new ApiError(
           500,
           "Login response did not include an access token",
         );
       }
 
-      const user = data.user || (await getCurrentUser(token));
-      setAuth(token, user);
+      const user = data.user || (await getCurrentUser(accessToken));
+      setAuth(accessToken, refreshToken, user);
       toast.success("Logged in successfully");
       const redirect = searchParams.get("redirect");
       router.push(redirect || dashboardPathForRole(user.role));
