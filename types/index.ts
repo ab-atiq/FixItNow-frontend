@@ -19,15 +19,23 @@ export interface User {
   updatedAt: string;
 }
 
+export interface AvailabilitySlot {
+  start: string;
+  end: string;
+  note?: string;
+}
+
 export interface TechnicianProfile {
-  id: string;
-  userId: string;
+  id?: string;
+  userId?: string;
   skills: string;
   experience: number;
   hourlyRate: number;
+  location?: string;
   isAvailable: boolean;
-  createdAt: string;
-  updatedAt: string;
+  availabilitySlots?: AvailabilitySlot[];
+  createdAt?: string;
+  updatedAt?: string;
   user?: User;
 }
 

@@ -96,6 +96,12 @@ export const api = {
     options?: Omit<RequestOptions, "method" | "body">,
   ) => request<T>(endpoint, { ...options, method: "POST", body }),
 
+  put: <T>(
+    endpoint: string,
+    body?: unknown,
+    options?: Omit<RequestOptions, "method" | "body">,
+  ) => request<T>(endpoint, { ...options, method: "PUT", body }),
+
   patch: <T>(
     endpoint: string,
     body?: unknown,

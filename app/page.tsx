@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { ArrowRight, ShieldCheck, Clock, Star } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import ServiceCard from "@/components/modules/services/ServiceCard";
@@ -27,6 +28,8 @@ async function getFeaturedServices(): Promise<Service[]> {
 
 export default async function HomePage() {
   const services = await getFeaturedServices();
+  const userRole = (await cookies()).get("fixitnow_role")?.value;
+  const isTechnician = userRole === "TECHNICIAN";
 
   return (
     <div>
@@ -36,19 +39,22 @@ export default async function HomePage() {
             Your Trusted Home Service Platform
           </h1>
           <p className="mt-4 max-w-xl text-lg text-gray-600">
-            Book qualified technicians for plumbing, electrical, cleaning, painting and more —
-            all in one place.
+            Book qualified technicians for plumbing, electrical, cleaning,
+            painting and more — all in one place.
           </p>
           <div className="mt-8 flex gap-4">
-            <Link href="/services">
-              <Button>
-                Browse Services
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            <Link href="/register">
-              <Button variant="outline">Join as Technician</Button>
-            </Link>
+            {isTechnician ? (
+              <Link href="/dashboard/technician">
+                <Button variant="danger">Join as Technician</Button>
+              </Link>
+            ) : (
+              <Link href="/services">
+                <Button>
+                  Browse Services
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </Link>
+            )}
           </div>
 
           <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-3">
@@ -70,15 +76,21 @@ export default async function HomePage() {
 
       <section className="mx-auto max-w-6xl px-4 py-16">
         <div className="mb-8 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-900">Featured Services</h2>
-          <Link href="/services" className="text-sm font-medium text-primary-600 hover:underline">
+          <h2 className="text-2xl font-bold text-gray-900">
+            Featured Services
+          </h2>
+          <Link
+            href="/services"
+            className="text-sm font-medium text-primary-600 hover:underline"
+          >
             View all
           </Link>
         </div>
 
         {services.length === 0 ? (
           <p className="text-gray-500">
-            No services available yet, or the backend at NEXT_PUBLIC_API_URL is not running.
+            No services available yet, or the backend at NEXT_PUBLIC_API_URL is
+            not running.
           </p>
         ) : (
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

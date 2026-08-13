@@ -33,7 +33,7 @@ export default function AdminDashboardPage() {
     e.preventDefault();
     setCreating(true);
     try {
-      await api.post<Category>("/categories", { name, description });
+      await api.post<Category>("/categories", { categoryName: name, description });
       toast.success("Category created");
       setName("");
       setDescription("");
