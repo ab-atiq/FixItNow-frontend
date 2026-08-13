@@ -15,6 +15,9 @@ export default function CustomerDashboardPage() {
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
   const [payingId, setPayingId] = useState("");
+  const [reviewTarget, setReviewTarget] = useState<Booking | null>(null);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: "" });
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
 
   async function loadData() {
     setLoading(true);
@@ -52,18 +55,6 @@ export default function CustomerDashboardPage() {
       });
       console.log("Payment request query:", query.toString());
 
-      // const response = await fetch(
-      //   `https://ph-l2-a4-fix-it-now-backend-project-drab.vercel.app/api/payments/checkout?${query.toString()}`,
-      //   {
-      //     method: "GET",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      //     },
-      //     cache: "no-store",
-      //   },
-      // );
-
       const response = await fetch(
         `https://ph-l2-a4-fix-it-now-backend-project-drab.vercel.app/api/payments/checkout?${query.toString()}`,
         {
@@ -80,9 +71,6 @@ export default function CustomerDashboardPage() {
       const payload = await response.json();
       const checkoutUrl = payload?.data?.paymentUrl ?? payload?.paymentUrl;
 
-      // console.log("Payment request response:", payload);
-      // console.log("Checkout URL:", checkoutUrl);
-
       if (!response.ok || !checkoutUrl) {
         throw new ApiError(
           response.status || 500,
@@ -97,6 +85,57 @@ export default function CustomerDashboardPage() {
       toast.error(message);
     } finally {
       setPayingId("");
+    }
+  }
+
+  function openReviewDialog(booking: Booking) {
+    setReviewTarget(booking);
+    setReviewForm({ rating: 5, comment: "" });
+  }
+
+  async function handleReviewSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!reviewTarget) {
+      return;
+    }
+
+    const trimmedComment = reviewForm.comment.trim();
+    const normalizedRating = Number(reviewForm.rating);
+
+    if (
+      !Number.isFinite(normalizedRating) ||
+      normalizedRating < 1 ||
+      normalizedRating > 5
+    ) {
+      toast.error("Please select a valid rating between 1 and 5.");
+      return;
+    }
+
+    if (!trimmedComment) {
+      toast.error("Please add a short comment about the service.");
+      return;
+    }
+
+    setReviewSubmitting(true);
+
+    try {
+      await api.post("/reviews", {
+        bookingId: reviewTarget.id,
+        rating: normalizedRating,
+        comment: trimmedComment,
+      });
+
+      toast.success("Review submitted successfully.");
+      setReviewTarget(null);
+      setReviewForm({ rating: 5, comment: "" });
+      await loadData();
+    } catch (err) {
+      const message =
+        err instanceof ApiError ? err.message : "Failed to submit review";
+      toast.error(message);
+    } finally {
+      setReviewSubmitting(false);
     }
   }
 
@@ -146,6 +185,16 @@ export default function CustomerDashboardPage() {
                           Pay now
                         </Button>
                       )}
+                      {booking.status === "COMPLETED" && (
+                        <Button
+                          onClick={() => openReviewDialog(booking)}
+                          isLoading={
+                            reviewSubmitting && reviewTarget?.id === booking.id
+                          }
+                        >
+                          Review
+                        </Button>
+                      )}
                     </td>
                   </tr>
                 ))}
@@ -154,6 +203,102 @@ export default function CustomerDashboardPage() {
           )}
         </CardContent>
       </Card>
+
+      {reviewTarget && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+          onClick={(event) => {
+            if (event.target === event.currentTarget) {
+              setReviewTarget(null);
+            }
+          }}
+        >
+          <div
+            className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="mb-5 flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-gray-900">
+                Leave a review
+              </h3>
+              <button
+                type="button"
+                onClick={() => setReviewTarget(null)}
+                className="text-xl leading-none text-gray-500 hover:text-gray-700"
+                aria-label="Close review form"
+              >
+                ×
+              </button>
+            </div>
+
+            <form onSubmit={handleReviewSubmit} className="space-y-5">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-gray-700">
+                  Rating
+                </label>
+                <div className="flex items-center gap-2">
+                  {[1, 2, 3, 4, 5].map((value) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() =>
+                        setReviewForm((current) => ({
+                          ...current,
+                          rating: value,
+                        }))
+                      }
+                      aria-label={`Rate ${value} out of 5`}
+                      className={`text-2xl transition ${
+                        value <= reviewForm.rating
+                          ? "text-yellow-400"
+                          : "text-gray-300 hover:text-yellow-300"
+                      }`}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="review-comment"
+                  className="mb-2 block text-sm font-medium text-gray-700"
+                >
+                  Comment
+                </label>
+                <textarea
+                  id="review-comment"
+                  rows={4}
+                  value={reviewForm.comment}
+                  onChange={(event) =>
+                    setReviewForm((current) => ({
+                      ...current,
+                      comment: event.target.value,
+                    }))
+                  }
+                  placeholder="Tell us how the service went..."
+                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-800 outline-none transition focus:border-primary-500 focus:ring-2 focus:ring-primary-100"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setReviewTarget(null)}
+                  disabled={reviewSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" isLoading={reviewSubmitting}>
+                  Submit
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       <Card>
         <CardHeader>
