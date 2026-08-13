@@ -116,12 +116,15 @@ export default function TechnicianDashboardPage() {
     loadCategories();
   }, []);
 
-  async function updateStatus(id: string, status: "ACCEPTED" | "DECLINED") {
+  async function updateStatus(
+    id: string,
+    status: "ACCEPTED" | "DECLINED" | "COMPLETED",
+  ) {
     setUpdatingId(id);
     try {
       await api.patch("/bookings/" + id, { status });
-      toast.success("Booking " + status.toLowerCase());
-      loadBookings();
+      toast.success("Booking status updated to " + status);
+      await loadBookings();
     } catch (err) {
       const message = err instanceof ApiError ? err.message : "Update failed";
       toast.error(message);
@@ -529,6 +532,18 @@ export default function TechnicianDashboardPage() {
                             onClick={() => updateStatus(booking.id, "DECLINED")}
                           >
                             Decline
+                          </Button>
+                        </div>
+                      )}
+                      {booking.status === "PAID" && (
+                        <div className="flex gap-2">
+                          <Button
+                            isLoading={updatingId === booking.id}
+                            onClick={() =>
+                              updateStatus(booking.id, "COMPLETED")
+                            }
+                          >
+                            Task Complete
                           </Button>
                         </div>
                       )}
