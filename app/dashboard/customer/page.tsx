@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { StatusBadge } from "@/components/modules/dashboard/StatusBadge";
 import { formatCurrency, formatDate } from "@/lib/utils";
 import type { Booking, Payment } from "@/types";
+import { getAccessToken } from "@/lib/auth";
 
 export default function CustomerDashboardPage() {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -37,19 +38,60 @@ export default function CustomerDashboardPage() {
     loadData();
   }, []);
 
-  async function handlePay(bookingId: string) {
-    setPayingId(bookingId);
+  async function handlePay(booking: Booking) {
+    setPayingId(booking.id);
+
     try {
-      const result = await api.post<{ clientSecret: string }>(
-        "/payments/create",
-        { bookingId },
+      const amount = Number(booking.service?.basePrice ?? 0);
+      const token = getAccessToken();
+
+      const query = new URLSearchParams({
+        bookingId: booking.id,
+        amount: String(amount),
+        currency: "usd",
+      });
+      console.log("Payment request query:", query.toString());
+
+      // const response = await fetch(
+      //   `https://ph-l2-a4-fix-it-now-backend-project-drab.vercel.app/api/payments/checkout?${query.toString()}`,
+      //   {
+      //     method: "GET",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      //     },
+      //     cache: "no-store",
+      //   },
+      // );
+
+      const response = await fetch(
+        `https://ph-l2-a4-fix-it-now-backend-project-drab.vercel.app/api/payments/checkout?${query.toString()}`,
+        {
+          method: "GET",
+          headers: token
+            ? {
+                Authorization: `Bearer ${token}`,
+              }
+            : {},
+          cache: "no-store",
+        },
       );
-      toast.success(
-        "Payment intent created. Client secret: " +
-          result.clientSecret.slice(0, 20) +
-          "...",
-      );
-      loadData();
+
+      const payload = await response.json();
+      const checkoutUrl = payload?.data?.paymentUrl ?? payload?.paymentUrl;
+
+      // console.log("Payment request response:", payload);
+      // console.log("Checkout URL:", checkoutUrl);
+
+      if (!response.ok || !checkoutUrl) {
+        throw new ApiError(
+          response.status || 500,
+          payload?.message || "Checkout URL was not returned by the server.",
+        );
+      }
+
+      toast.success("Redirecting to Stripe checkout...");
+      window.location.href = checkoutUrl;
     } catch (err) {
       const message = err instanceof ApiError ? err.message : "Payment failed";
       toast.error(message);
@@ -98,7 +140,7 @@ export default function CustomerDashboardPage() {
                     <td className="py-3 pr-4">
                       {booking.status === "ACCEPTED" && !booking.payment && (
                         <Button
-                          onClick={() => handlePay(booking.id)}
+                          onClick={() => handlePay(booking)}
                           isLoading={payingId === booking.id}
                         >
                           Pay now
