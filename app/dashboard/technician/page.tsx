@@ -20,7 +20,8 @@ export default function TechnicianDashboardPage() {
       const data = await api.get<Booking[]>("/bookings");
       setBookings(data);
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : "Failed to load bookings";
+      const message =
+        err instanceof ApiError ? err.message : "Failed to load bookings";
       toast.error(message);
     } finally {
       setLoading(false);
@@ -47,17 +48,21 @@ export default function TechnicianDashboardPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
-      <h1 className="mb-8 text-2xl font-bold text-gray-900">Technician Dashboard</h1>
+      <h1 className="mb-8 text-2xl font-bold text-gray-900">
+        Technician Dashboard
+      </h1>
 
       <Card className="mb-8">
         <CardHeader>
-          <h2 className="font-semibold text-gray-900">Profile & Availability</h2>
+          <h2 className="font-semibold text-gray-900">
+            Profile & Availability
+          </h2>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-500">
-            Profile and availability management endpoints are not wired up on the backend yet.
-            Once "/api/technician/profile" and "/api/technician/availability" exist, connect the
-            forms here.
+            Profile and availability management endpoints are not wired up on
+            the backend yet. Once "/api/technician/profile" and
+            "/api/technician/availability" exist, connect the forms here.
           </p>
         </CardContent>
       </Card>
@@ -85,9 +90,11 @@ export default function TechnicianDashboardPage() {
                 {bookings.map((booking) => (
                   <tr key={booking.id} className="border-b border-gray-50">
                     <td className="py-3 pr-4 font-medium text-gray-900">
-                      {booking.service?.name || booking.serviceId}
+                      {booking.service?.serviceName || booking.serviceId}
                     </td>
-                    <td className="py-3 pr-4 text-gray-600">{formatDate(booking.scheduledDate)}</td>
+                    <td className="py-3 pr-4 text-gray-600">
+                      {formatDate(booking.scheduledDate)}
+                    </td>
                     <td className="py-3 pr-4">
                       <StatusBadge status={booking.status} />
                     </td>

@@ -19,7 +19,8 @@ export default function AdminDashboardPage() {
       const data = await api.get<Category[]>("/categories", { auth: false });
       setCategories(data);
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : "Failed to load categories";
+      const message =
+        err instanceof ApiError ? err.message : "Failed to load categories";
       toast.error(message);
     }
   }
@@ -38,7 +39,8 @@ export default function AdminDashboardPage() {
       setDescription("");
       loadCategories();
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : "Failed to create category";
+      const message =
+        err instanceof ApiError ? err.message : "Failed to create category";
       toast.error(message);
     } finally {
       setCreating(false);
@@ -55,8 +57,9 @@ export default function AdminDashboardPage() {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-gray-500">
-            Connect this table to "GET /api/admin/users" and wire Ban/Unban buttons to
-            "PATCH /api/admin/users/:id" once those endpoints are implemented on the backend.
+            Connect this table to "GET /api/admin/users" and wire Ban/Unban
+            buttons to "PATCH /api/admin/users/:id" once those endpoints are
+            implemented on the backend.
           </p>
         </CardContent>
       </Card>
@@ -66,7 +69,10 @@ export default function AdminDashboardPage() {
           <h2 className="font-semibold text-gray-900">Service Categories</h2>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleCreateCategory} className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end">
+          <form
+            onSubmit={handleCreateCategory}
+            className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end"
+          >
             <Input
               label="Name"
               value={name}
@@ -91,9 +97,14 @@ export default function AdminDashboardPage() {
                 key={category.id}
                 className="rounded-lg border border-gray-200 px-3 py-2 text-sm"
               >
-                <span className="font-medium text-gray-900">{category.name}</span>
+                <span className="font-medium text-gray-900">
+                  {category.categoryName}
+                </span>
                 {category.description && (
-                  <span className="text-gray-500"> — {category.description}</span>
+                  <span className="text-gray-500">
+                    {" "}
+                    — {category.description}
+                  </span>
                 )}
               </li>
             ))}

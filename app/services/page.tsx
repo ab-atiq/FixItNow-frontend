@@ -23,7 +23,9 @@ export default function ServicesPage() {
 
   useEffect(() => {
     setLoading(true);
-    const endpoint = categoryId ? "/services?categoryId=" + categoryId : "/services";
+    const endpoint = categoryId
+      ? "/services?categoryId=" + categoryId
+      : "/services";
     api
       .get<Service[]>(endpoint, { auth: false })
       .then(setServices)
@@ -32,7 +34,7 @@ export default function ServicesPage() {
   }, [categoryId]);
 
   const filtered = services.filter((s) =>
-    s.name.toLowerCase().includes(search.toLowerCase())
+    s.serviceName.toLowerCase().includes(search.toLowerCase()),
   );
 
   console.log("service", services);
@@ -65,7 +67,7 @@ export default function ServicesPage() {
           <option value="">All categories</option>
           {categories.map((c) => (
             <option key={c.id} value={c.id}>
-              {c.name}
+              {c.categoryName}
             </option>
           ))}
         </select>

@@ -25,7 +25,9 @@ export default function TechnicianDetailPage() {
     api
       .get<Service[]>("/services", { auth: false })
       .then((all) => {
-        const forTechnician = all.filter((s) => s.technician?.userId === technicianId);
+        const forTechnician = all.filter(
+          (s) => s.technician?.userId === technicianId,
+        );
         setServices(forTechnician.length ? forTechnician : all);
       })
       .catch(() => setServices([]));
@@ -55,7 +57,8 @@ export default function TechnicianDetailPage() {
       toast.success("Booking requested successfully");
       router.push("/dashboard/customer");
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : "Something went wrong";
+      const message =
+        err instanceof ApiError ? err.message : "Something went wrong";
       toast.error(message);
     } finally {
       setLoading(false);
@@ -70,7 +73,9 @@ export default function TechnicianDetailPage() {
             {technicianId.slice(0, 2).toUpperCase()}
           </div>
           <div>
-            <h1 className="text-xl font-bold text-gray-900">Technician Profile</h1>
+            <h1 className="text-xl font-bold text-gray-900">
+              Technician Profile
+            </h1>
             <p className="flex items-center gap-1 text-sm text-gray-500">
               <Star className="h-4 w-4 text-yellow-500" />
               Rated by customers on completed jobs
@@ -81,7 +86,9 @@ export default function TechnicianDetailPage() {
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         <div>
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">Services offered</h2>
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">
+            Services offered
+          </h2>
           <div className="flex flex-col gap-3">
             {services.map((service) => (
               <button
@@ -96,26 +103,36 @@ export default function TechnicianDetailPage() {
                 }
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-medium text-gray-900">{service.name}</span>
+                  <span className="font-medium text-gray-900">
+                    {service.serviceName}
+                  </span>
                   <span className="flex items-center gap-1 text-sm text-gray-600">
                     <DollarSign className="h-3.5 w-3.5" />
                     {formatCurrency(service.basePrice)}
                   </span>
                 </div>
-                <p className="mt-1 text-xs text-gray-500">{service.description}</p>
+                <p className="mt-1 text-xs text-gray-500">
+                  {service.description}
+                </p>
               </button>
             ))}
             {services.length === 0 && (
-              <p className="text-sm text-gray-500">No services listed for this technician yet.</p>
+              <p className="text-sm text-gray-500">
+                No services listed for this technician yet.
+              </p>
             )}
           </div>
         </div>
 
         <div>
-          <h2 className="mb-4 text-lg font-semibold text-gray-900">Book this technician</h2>
+          <h2 className="mb-4 text-lg font-semibold text-gray-900">
+            Book this technician
+          </h2>
           <form onSubmit={handleBooking} className="flex flex-col gap-4">
             <div>
-              <label className="mb-1 block text-sm font-medium text-gray-700">Scheduled date</label>
+              <label className="mb-1 block text-sm font-medium text-gray-700">
+                Scheduled date
+              </label>
               <input
                 type="datetime-local"
                 required
@@ -124,7 +141,11 @@ export default function TechnicianDetailPage() {
                 className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
               />
             </div>
-            <Button type="submit" isLoading={loading} disabled={!selectedServiceId}>
+            <Button
+              type="submit"
+              isLoading={loading}
+              disabled={!selectedServiceId}
+            >
               Request Booking
             </Button>
           </form>

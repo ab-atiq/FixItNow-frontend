@@ -33,7 +33,7 @@ export interface TechnicianProfile {
 
 export interface Category {
   id: string;
-  name: string;
+  categoryName: string;
   description?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -41,7 +41,7 @@ export interface Category {
 
 export interface Service {
   id: string;
-  name: string;
+  serviceName: string;
   description?: string | null;
   categoryId: string;
   technicianId: string;

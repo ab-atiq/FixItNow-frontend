@@ -14,8 +14,12 @@ export default function ServiceCard({ service }: { service: Service }) {
           <Wrench className="h-5 w-5 text-primary-600" />
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900">{service.name}</h3>
-          {service.category && <p className="text-xs text-gray-500">{service.category.name}</p>}
+          <h3 className="font-semibold text-gray-900">{service.serviceName}</h3>
+          {service.category && (
+            <p className="text-xs text-gray-500">
+              {service.category.categoryName}
+            </p>
+          )}
         </div>
       </CardHeader>
       <CardContent className="flex flex-1 flex-col justify-between gap-4">

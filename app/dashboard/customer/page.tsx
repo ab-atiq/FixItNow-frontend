@@ -25,7 +25,8 @@ export default function CustomerDashboardPage() {
       setBookings(b);
       setPayments(p);
     } catch (err) {
-      const message = err instanceof ApiError ? err.message : "Failed to load dashboard";
+      const message =
+        err instanceof ApiError ? err.message : "Failed to load dashboard";
       toast.error(message);
     } finally {
       setLoading(false);
@@ -39,8 +40,15 @@ export default function CustomerDashboardPage() {
   async function handlePay(bookingId: string) {
     setPayingId(bookingId);
     try {
-      const result = await api.post<{ clientSecret: string }>("/payments/create", { bookingId });
-      toast.success("Payment intent created. Client secret: " + result.clientSecret.slice(0, 20) + "...");
+      const result = await api.post<{ clientSecret: string }>(
+        "/payments/create",
+        { bookingId },
+      );
+      toast.success(
+        "Payment intent created. Client secret: " +
+          result.clientSecret.slice(0, 20) +
+          "...",
+      );
       loadData();
     } catch (err) {
       const message = err instanceof ApiError ? err.message : "Payment failed";
@@ -62,7 +70,9 @@ export default function CustomerDashboardPage() {
           {loading ? (
             <p className="text-sm text-gray-500">Loading...</p>
           ) : bookings.length === 0 ? (
-            <p className="text-sm text-gray-500">You have not booked any service yet.</p>
+            <p className="text-sm text-gray-500">
+              You have not booked any service yet.
+            </p>
           ) : (
             <table className="w-full text-left text-sm">
               <thead>
@@ -77,9 +87,11 @@ export default function CustomerDashboardPage() {
                 {bookings.map((booking) => (
                   <tr key={booking.id} className="border-b border-gray-50">
                     <td className="py-3 pr-4 font-medium text-gray-900">
-                      {booking.service?.name || booking.serviceId}
+                      {booking.service?.serviceName || booking.serviceId}
                     </td>
-                    <td className="py-3 pr-4 text-gray-600">{formatDate(booking.scheduledDate)}</td>
+                    <td className="py-3 pr-4 text-gray-600">
+                      {formatDate(booking.scheduledDate)}
+                    </td>
                     <td className="py-3 pr-4">
                       <StatusBadge status={booking.status} />
                     </td>
@@ -124,7 +136,9 @@ export default function CustomerDashboardPage() {
                     <td className="py-3 pr-4 font-mono text-xs text-gray-600">
                       {payment.transactionId}
                     </td>
-                    <td className="py-3 pr-4">{formatCurrency(payment.amount)}</td>
+                    <td className="py-3 pr-4">
+                      {formatCurrency(payment.amount)}
+                    </td>
                     <td className="py-3 pr-4">{payment.status}</td>
                     <td className="py-3 pr-4 text-gray-600">
                       {payment.paidAt ? formatDate(payment.paidAt) : "—"}
