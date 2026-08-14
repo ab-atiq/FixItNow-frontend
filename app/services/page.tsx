@@ -1,85 +1,208 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Search } from "lucide-react";
-import { api } from "@/lib/api";
+import { toast } from "sonner";
+import { api, ApiError } from "@/lib/api";
 import ServiceCard from "@/components/modules/services/ServiceCard";
 import { Input } from "@/components/ui/Input";
-import type { Category, Service } from "@/types";
+import { Button } from "@/components/ui/Button";
+import type { Service } from "@/types";
 
 export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [categoryId, setCategoryId] = useState("");
-  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
+  // Filter states
+  const [type, setType] = useState("");
+  const [location, setLocation] = useState("");
+  const [rating, setRating] = useState("0");
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+
+  // Available locations
+  const [locations, setLocations] = useState<string[]>([]);
+
+  // Load all services once to get unique locations
   useEffect(() => {
     api
-      .get<Category[]>("/categories", { auth: false })
-      .then(setCategories)
-      .catch(() => setCategories([]));
+      .get<Service[]>("/services", { auth: false })
+      .then((data) => {
+        const uniqueLocations = Array.from(
+          new Set(
+            data
+              .map((s) => s.technician?.location)
+              .filter((l): l is string => !!l),
+          ),
+        );
+        setLocations(uniqueLocations.sort());
+      })
+      .catch((err) => {
+        console.error("Failed to load locations:", err);
+      });
   }, []);
 
+  // Build query string with filters
+  const buildQuery = useCallback(() => {
+    const params = new URLSearchParams();
+
+    if (type.trim()) {
+      params.append("type", type.trim());
+    }
+
+    if (location.trim()) {
+      params.append("location", location.trim());
+    }
+
+    if (rating && rating !== "0") {
+      params.append("rating", rating);
+    }
+
+    if (minPrice.trim()) {
+      params.append("minPrice", minPrice.trim());
+    }
+
+    if (maxPrice.trim()) {
+      params.append("maxPrice", maxPrice.trim());
+    }
+
+    const queryString = params.toString();
+    return queryString ? "/services?" + queryString : "/services";
+  }, [type, location, rating, minPrice, maxPrice]);
+
+  // Fetch services when filters change
   useEffect(() => {
-    setLoading(true);
-    const endpoint = categoryId
-      ? "/services?categoryId=" + categoryId
-      : "/services";
-    api
-      .get<Service[]>(endpoint, { auth: false })
-      .then(setServices)
-      .catch(() => setServices([]))
-      .finally(() => setLoading(false));
-  }, [categoryId]);
+    const loadServices = async () => {
+      setLoading(true);
+      try {
+        const endpoint = buildQuery();
+        const data = await api.get<Service[]>(endpoint, { auth: false });
+        setServices(data);
+      } catch (err) {
+        const message =
+          err instanceof ApiError ? err.message : "Failed to load services";
+        toast.error(message);
+        setServices([]);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const filtered = services.filter((s) =>
-    s.serviceName.toLowerCase().includes(search.toLowerCase()),
-  );
+    loadServices();
+  }, [buildQuery]);
 
-  console.log("service", services);
-  console.log("category", categories);
-  console.log("search", search);
-  console.log("loading", loading);
+  const handleReset = () => {
+    setType("");
+    setLocation("");
+    setRating("0");
+    setMinPrice("");
+    setMaxPrice("");
+  };
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
       <h1 className="mb-6 text-2xl font-bold text-gray-900">Browse Services</h1>
 
-      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center">
-        <div className="flex-1">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+      {/* Filters Section */}
+      <div className="mb-8 rounded-lg border border-gray-200 bg-gray-50 p-6">
+        <h2 className="mb-4 text-lg font-semibold text-gray-900">Filters</h2>
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          {/* Service Type Search */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-700">
+              Service Type
+            </label>
             <Input
-              placeholder="Search services..."
-              className="pl-9"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              placeholder="e.g., Plumbing"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+              className="w-full"
+            />
+          </div>
+
+          {/* Location Filter */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-700">
+              Location
+            </label>
+            <select
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+            >
+              <option value="">All locations</option>
+              {locations.map((loc) => (
+                <option key={loc} value={loc}>
+                  {loc}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Rating Filter */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-700">
+              Min Rating
+            </label>
+            <select
+              value={rating}
+              onChange={(e) => setRating(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+            >
+              <option value="0">All ratings</option>
+              <option value="1">★ 1+</option>
+              <option value="2">★★ 2+</option>
+              <option value="3">★★★ 3+</option>
+              <option value="4">★★★★ 4+</option>
+              <option value="5">★★★★★ 5</option>
+            </select>
+          </div>
+
+          {/* Min Price */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-700">
+              Min Price ($)
+            </label>
+            <Input
+              type="number"
+              placeholder="0"
+              value={minPrice}
+              onChange={(e) => setMinPrice(e.target.value)}
+              className="w-full"
+            />
+          </div>
+
+          {/* Max Price */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-700">
+              Max Price ($)
+            </label>
+            <Input
+              type="number"
+              placeholder="999"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+              className="w-full"
             />
           </div>
         </div>
 
-        <select
-          value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-          className="rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-        >
-          <option value="">All categories</option>
-          {categories.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.categoryName}
-            </option>
-          ))}
-        </select>
+        <div className="mt-4 flex justify-end">
+          <Button variant="outline" onClick={handleReset}>
+            Clear Filters
+          </Button>
+        </div>
       </div>
 
+      {/* Services Grid */}
       {loading ? (
-        <p className="text-gray-500">Loading services...</p>
-      ) : filtered.length === 0 ? (
-        <p className="text-gray-500">No services found.</p>
+        <p className="text-center text-gray-500">Loading services...</p>
+      ) : services.length === 0 ? (
+        <p className="text-center text-gray-500">No services found.</p>
       ) : (
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((service) => (
+          {services.map((service) => (
             <ServiceCard key={service.id} service={service} />
           ))}
         </div>

@@ -58,6 +58,7 @@ export interface Service {
   updatedAt: string;
   category?: Category;
   technician?: TechnicianProfile;
+  averageRating?: number | null;
 }
 
 export interface Payment {
