@@ -24,10 +24,12 @@ const itemsByRole: Record<string, { label: string; href: string }[]> = {
       label: "Incoming Bookings",
       href: "/dashboard/technician/incoming-bookings",
     },
+    { label: "My Reviews", href: "/dashboard/technician/reviews" },
   ],
   CUSTOMER: [
     { label: "My Bookings", href: "/dashboard/customer/my-bookings" },
     { label: "Payments History", href: "/dashboard/customer/payment-history" },
+    { label: "My Reviews", href: "/dashboard/customer/reviews" },
   ],
 };
 

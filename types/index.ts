@@ -92,6 +92,8 @@ export interface Review {
   comment?: string | null;
   createdAt: string;
   updatedAt: string;
+  technician?: User;
+  customer?: User;
 }
 
 export interface ApiResponse<T> {
