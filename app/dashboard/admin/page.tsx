@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import type { Category } from "@/types";
+import DashboardSidebar from "@/components/modules/dashboard/Sidebar";
 
 type AdminUser = {
   id: string;
@@ -113,150 +114,159 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
-      <h1 className="mb-8 text-2xl font-bold text-gray-900">Admin Dashboard</h1>
+      <div className="lg:flex lg:items-start lg:gap-8">
+        <aside className="hidden lg:block w-64 flex-shrink-0">
+          <DashboardSidebar />
+        </aside>
 
-      <Card className="mb-8">
-        <CardHeader>
-          <h2 className="font-semibold text-gray-900 text-lg text-center">
-            User Management
-          </h2>
-        </CardHeader>
-        <CardContent className="space-y-8">
-          {loadingUsers ? (
-            <p className="text-sm text-gray-500">Loading users...</p>
-          ) : (
-            [
-              { title: "Admin Users", role: "ADMIN" },
-              { title: "Customer Users", role: "CUSTOMER" },
-              { title: "Technician Users", role: "TECHNICIAN" },
-            ].map(({ title, role }) => {
-              const filteredUsers = users.filter((user) => user.role === role);
+        <main className="flex-1">
+          <h1 className="mb-8 text-2xl font-bold text-gray-900">Admin Dashboard</h1>
 
-              return (
-                <div key={role}>
-                  <h2 className="mb-3 text-lg font-semibold text-gray-900">
-                    {title}
-                  </h2>
+          <Card className="mb-8">
+            <CardHeader>
+              <h2 className="font-semibold text-gray-900 text-lg text-center">
+                User Management
+              </h2>
+            </CardHeader>
+            <CardContent className="space-y-8">
+              {loadingUsers ? (
+                <p className="text-sm text-gray-500">Loading users...</p>
+              ) : (
+                [
+                  { title: "Admin Users", role: "ADMIN" },
+                  { title: "Customer Users", role: "CUSTOMER" },
+                  { title: "Technician Users", role: "TECHNICIAN" },
+                ].map(({ title, role }) => {
+                  const filteredUsers = users.filter((user) => user.role === role);
 
-                  {filteredUsers.length === 0 ? (
-                    <p className="text-sm text-gray-500">
-                      No {title.toLowerCase()} found.
-                    </p>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-left text-sm">
-                        <thead>
-                          <tr className="border-b border-gray-100 text-gray-500">
-                            <th className="py-2 pr-4">Name</th>
-                            <th className="py-2 pr-4">Email</th>
-                            <th className="py-2 pr-4">Role</th>
-                            <th className="py-2 pr-4">Status</th>
-                            <th className="py-2 pr-4">Action</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {filteredUsers.map((user) => {
-                            const status = getUserStatus(user);
-                            const isBlocked = status === "BLOCKED";
+                  return (
+                    <div key={role}>
+                      <h2 className="mb-3 text-lg font-semibold text-gray-900">
+                        {title}
+                      </h2>
 
-                            return (
-                              <tr
-                                key={user.id}
-                                className="border-b border-gray-50"
-                              >
-                                <td className="py-3 pr-4 font-medium text-gray-900">
-                                  {user.name}
-                                </td>
-                                <td className="py-3 pr-4 text-gray-600">
-                                  {user.email}
-                                </td>
-                                <td className="py-3 pr-4 text-gray-600">
-                                  {user.role}
-                                </td>
-                                <td className="py-3 pr-4">
-                                  <span
-                                    className={
-                                      "inline-flex rounded-full px-2 py-1 text-xs font-medium " +
-                                      (isBlocked
-                                        ? "bg-red-100 text-red-700"
-                                        : "bg-emerald-100 text-emerald-700")
-                                    }
-                                  >
-                                    {status}
-                                  </span>
-                                </td>
-                                <td className="py-3 pr-4">
-                                  <Button
-                                    variant={isBlocked ? "outline" : "danger"}
-                                    isLoading={togglingUserId === user.id}
-                                    onClick={() => toggleUserStatus(user)}
-                                    className="min-w-[90px]"
-                                  >
-                                    {isBlocked ? "Unban" : "Ban"}
-                                  </Button>
-                                </td>
+                      {filteredUsers.length === 0 ? (
+                        <p className="text-sm text-gray-500">
+                          No {title.toLowerCase()} found.
+                        </p>
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left text-sm">
+                            <thead>
+                              <tr className="border-b border-gray-100 text-gray-500">
+                                <th className="py-2 pr-4">Name</th>
+                                <th className="py-2 pr-4">Email</th>
+                                <th className="py-2 pr-4">Role</th>
+                                <th className="py-2 pr-4">Status</th>
+                                <th className="py-2 pr-4">Action</th>
                               </tr>
-                            );
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-              );
-            })
-          )}
-        </CardContent>
-      </Card>
+                            </thead>
+                            <tbody>
+                              {filteredUsers.map((user) => {
+                                const status = getUserStatus(user);
+                                const isBlocked = status === "BLOCKED";
 
-      <Card>
-        <CardHeader>
-          <h2 className="font-semibold text-gray-900">Service Categories</h2>
-        </CardHeader>
-        <CardContent>
-          <form
-            onSubmit={handleCreateCategory}
-            className="flex flex-col gap-4 sm:flex-row sm:items-end"
-          >
-            <Input
-              label="Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              placeholder="e.g. Painting"
-            />
-            <Input
-              label="Description"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Optional description"
-            />
-            <Button type="submit" isLoading={creating} className="lg:w-2/5">
-              Add Category
-            </Button>
-          </form>
-        </CardContent>
-        <CardContent>
-          <ul className="flex flex-col gap-2">
-            {categories.map((category) => (
-              <li
-                key={category.id}
-                className="rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                                return (
+                                  <tr
+                                    key={user.id}
+                                    className="border-b border-gray-50"
+                                  >
+                                    <td className="py-3 pr-4 font-medium text-gray-900">
+                                      {user.name}
+                                    </td>
+                                    <td className="py-3 pr-4 text-gray-600">
+                                      {user.email}
+                                    </td>
+                                    <td className="py-3 pr-4 text-gray-600">
+                                      {user.role}
+                                    </td>
+                                    <td className="py-3 pr-4">
+                                      <span
+                                        className={
+                                          "inline-flex rounded-full px-2 py-1 text-xs font-medium " +
+                                          (isBlocked
+                                            ? "bg-red-100 text-red-700"
+                                            : "bg-emerald-100 text-emerald-700")
+                                        }
+                                      >
+                                        {status}
+                                      </span>
+                                    </td>
+                                    <td className="py-3 pr-4">
+                                      <Button
+                                        variant={isBlocked ? "outline" : "danger"}
+                                        isLoading={togglingUserId === user.id}
+                                        onClick={() => toggleUserStatus(user)}
+                                        className="min-w-[90px]"
+                                      >
+                                        {isBlocked ? "Unban" : "Ban"}
+                                      </Button>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })
+              )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <h2 className="font-semibold text-gray-900">Service Categories</h2>
+            </CardHeader>
+            <CardContent>
+              <form
+                onSubmit={handleCreateCategory}
+                className="flex flex-col gap-4 sm:flex-row sm:items-end"
               >
-                <span className="font-medium text-gray-900">
-                  {category.categoryName}
-                </span>
-                {category.description && (
-                  <span className="text-gray-500">
-                    {" "}
-                    — {category.description}
-                  </span>
-                )}
-              </li>
-            ))}
-          </ul>
-        </CardContent>
-      </Card>
+                <Input
+                  label="Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  placeholder="e.g. Painting"
+                />
+                
+                <Input
+                  label="Description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Optional description"
+                />
+                <Button type="submit" isLoading={creating} className="lg:w-2/5">
+                  Add Category
+                </Button>
+              </form>
+            </CardContent>
+            <CardContent>
+              <ul className="flex flex-col gap-2">
+                {categories.map((category) => (
+                  <li
+                    key={category.id}
+                    className="rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                  >
+                    <span className="font-medium text-gray-900">
+                      {category.categoryName}
+                    </span>
+                    {category.description && (
+                      <span className="text-gray-500">
+                        {" "}
+                        — {category.description}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
     </div>
   );
 }

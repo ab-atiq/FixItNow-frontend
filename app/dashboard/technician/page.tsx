@@ -14,6 +14,7 @@ import type {
   Category,
   TechnicianProfile,
 } from "@/types";
+import DashboardSidebar from "@/components/modules/dashboard/Sidebar";
 
 const emptySlot = (): AvailabilitySlot => ({
   start: "",
@@ -265,220 +266,226 @@ export default function TechnicianDashboardPage() {
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
-      <h1 className="mb-8 text-2xl font-bold text-gray-900">
-        Technician Dashboard
-      </h1>
+      <div className="lg:flex lg:items-start lg:gap-8">
+        <aside className="hidden lg:block w-64 flex-shrink-0">
+          <DashboardSidebar />
+        </aside>
 
-      <div className="mb-8 grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <h2 className="font-semibold text-gray-900">Technician Profile</h2>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleProfileSave} className="space-y-4">
-              <Input
-                label="Skills"
-                value={profile.skills}
-                onChange={(e) => updateProfileField("skills", e.target.value)}
-                placeholder="Plumbing, Electrical"
-              />
+        <main className="flex-1">
+          <h1 className="mb-8 text-2xl font-bold text-gray-900">
+            Technician Dashboard
+          </h1>
 
-              <div className="grid gap-4 sm:grid-cols-2">
-                <Input
-                  label="Experience (years)"
-                  type="number"
-                  min={0}
-                  value={profile.experience}
-                  onChange={(e) =>
-                    updateProfileField("experience", Number(e.target.value))
-                  }
-                />
+          <div className="mb-8 grid gap-6 lg:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <h2 className="font-semibold text-gray-900">Technician Profile</h2>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleProfileSave} className="space-y-4">
+                  <Input
+                    label="Skills"
+                    value={profile.skills}
+                    onChange={(e) => updateProfileField("skills", e.target.value)}
+                    placeholder="Plumbing, Electrical"
+                  />
 
-                <Input
-                  label="Hourly rate"
-                  type="number"
-                  min={0}
-                  value={profile.hourlyRate}
-                  onChange={(e) =>
-                    updateProfileField("hourlyRate", Number(e.target.value))
-                  }
-                />
-              </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <Input
+                      label="Experience (years)"
+                      type="number"
+                      min={0}
+                      value={profile.experience}
+                      onChange={(e) =>
+                        updateProfileField("experience", Number(e.target.value))
+                      }
+                    />
 
-              <Input
-                label="Location"
-                value={profile.location || ""}
-                onChange={(e) => updateProfileField("location", e.target.value)}
-                placeholder="Rajshahi, Bangladesh"
-              />
+                    <Input
+                      label="Hourly rate"
+                      type="number"
+                      min={0}
+                      value={profile.hourlyRate}
+                      onChange={(e) =>
+                        updateProfileField("hourlyRate", Number(e.target.value))
+                      }
+                    />
+                  </div>
 
-              <label className="flex items-center gap-2 text-sm text-gray-700">
-                <input
-                  type="checkbox"
-                  checked={profile.isAvailable}
-                  onChange={(e) =>
-                    updateProfileField("isAvailable", e.target.checked)
-                  }
-                />
-                Available for new jobs
-              </label>
+                  <Input
+                    label="Location"
+                    value={profile.location || ""}
+                    onChange={(e) => updateProfileField("location", e.target.value)}
+                    placeholder="Rajshahi, Bangladesh"
+                  />
 
-              <Button
-                type="submit"
-                isLoading={savingProfile}
-                className="w-full"
-              >
-                {profile.id ? "Update profile" : "Create profile"}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                  <label className="flex items-center gap-2 text-sm text-gray-700">
+                    <input
+                      type="checkbox"
+                      checked={profile.isAvailable}
+                      onChange={(e) =>
+                        updateProfileField("isAvailable", e.target.checked)
+                      }
+                    />
+                    Available for new jobs
+                  </label>
 
-        <Card>
-          <CardHeader>
-            <h2 className="font-semibold text-gray-900">Availability Slots</h2>
-          </CardHeader>
-          <CardContent>
-            {!hasProfile ? (
-              <p className="text-sm text-gray-500">
-                Your technician profile is not created yet. Please create your
-                profile first to manage availability slots.
-              </p>
-            ) : (
-              <form onSubmit={handleAvailabilitySave} className="space-y-4">
-                {(profile.availabilitySlots || [emptySlot()]).map(
-                  (slot, index) => (
-                    <div
-                      key={index}
-                      className="grid gap-3 rounded-lg border border-gray-200 p-3"
-                    >
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <Input
-                          label="Start"
-                          type="datetime-local"
-                          value={slot.start ? slot.start.slice(0, 16) : ""}
-                          onChange={(e) =>
-                            updateAvailabilitySlot(
-                              index,
-                              "start",
-                              e.target.value,
-                            )
-                          }
-                        />
-                        <Input
-                          label="End"
-                          type="datetime-local"
-                          value={slot.end ? slot.end.slice(0, 16) : ""}
-                          onChange={(e) =>
-                            updateAvailabilitySlot(index, "end", e.target.value)
-                          }
-                        />
-                      </div>
-
-                      <Input
-                        label="Note"
-                        value={slot.note || ""}
-                        onChange={(e) =>
-                          updateAvailabilitySlot(index, "note", e.target.value)
-                        }
-                        placeholder="Morning shift"
-                      />
-                    </div>
-                  ),
-                )}
-
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={addAvailabilitySlot}
-                  >
-                    Add slot
-                  </Button>
                   <Button
                     type="submit"
-                    isLoading={savingAvailability}
-                    className="flex-1"
+                    isLoading={savingProfile}
+                    className="w-full"
                   >
-                    Save availability
+                    {profile.id ? "Update profile" : "Create profile"}
                   </Button>
-                </div>
-              </form>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+                </form>
+              </CardContent>
+            </Card>
 
-      <div className="mb-8 mt-8">
-        <Card>
-          <CardHeader>
-            <h2 className="font-semibold text-gray-900">Create Service</h2>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleServiceCreate} className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
-                <Input
-                  label="Service name"
-                  value={serviceForm.serviceName}
-                  onChange={(e) =>
-                    updateServiceField("serviceName", e.target.value)
-                  }
-                  placeholder="Leak Pipe Repair"
-                />
+            <Card>
+              <CardHeader>
+                <h2 className="font-semibold text-gray-900">Availability Slots</h2>
+              </CardHeader>
+              <CardContent>
+                {!hasProfile ? (
+                  <p className="text-sm text-gray-500">
+                    Your technician profile is not created yet. Please create your
+                    profile first to manage availability slots.
+                  </p>
+                ) : (
+                  <form onSubmit={handleAvailabilitySave} className="space-y-4">
+                    {(profile.availabilitySlots || [emptySlot()]).map(
+                      (slot, index) => (
+                        <div
+                          key={index}
+                          className="grid gap-3 rounded-lg border border-gray-200 p-3"
+                        >
+                          <div className="grid gap-3 sm:grid-cols-2">
+                            <Input
+                              label="Start"
+                              type="datetime-local"
+                              value={slot.start ? slot.start.slice(0, 16) : ""}
+                              onChange={(e) =>
+                                updateAvailabilitySlot(
+                                  index,
+                                  "start",
+                                  e.target.value,
+                                )
+                              }
+                            />
+                            <Input
+                              label="End"
+                              type="datetime-local"
+                              value={slot.end ? slot.end.slice(0, 16) : ""}
+                              onChange={(e) =>
+                                updateAvailabilitySlot(index, "end", e.target.value)
+                              }
+                            />
+                          </div>
 
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-gray-700">
-                    Category
-                  </label>
-                  <select
-                    value={serviceForm.categoryId}
+                          <Input
+                            label="Note"
+                            value={slot.note || ""}
+                            onChange={(e) =>
+                              updateAvailabilitySlot(index, "note", e.target.value)
+                            }
+                            placeholder="Morning shift"
+                          />
+                        </div>
+                      ),
+                    )}
+
+                    <div className="flex gap-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={addAvailabilitySlot}
+                      >
+                        Add slot
+                      </Button>
+                      <Button
+                        type="submit"
+                        isLoading={savingAvailability}
+                        className="flex-1"
+                      >
+                        Save availability
+                      </Button>
+                    </div>
+                  </form>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="mb-8 mt-8">
+            <Card>
+              <CardHeader>
+                <h2 className="font-semibold text-gray-900">Create Service</h2>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleServiceCreate} className="space-y-4">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <Input
+                      label="Service name"
+                      value={serviceForm.serviceName}
+                      onChange={(e) =>
+                        updateServiceField("serviceName", e.target.value)
+                      }
+                      placeholder="Leak Pipe Repair"
+                    />
+
+                    <div>
+                      <label className="mb-1 block text-sm font-medium text-gray-700">
+                        Category
+                      </label>
+                      <select
+                        value={serviceForm.categoryId}
+                        onChange={(e) =>
+                          updateServiceField("categoryId", e.target.value)
+                        }
+                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                      >
+                        <option value="">Select a category</option>
+                        {categories.map((category) => (
+                          <option key={category.id} value={category.id}>
+                            {category.categoryName}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="mb-1 block text-sm font-medium text-gray-700">
+                      Description
+                    </label>
+                    <textarea
+                      value={serviceForm.description}
+                      onChange={(e) =>
+                        updateServiceField("description", e.target.value)
+                      }
+                      rows={4}
+                      placeholder="Fixing leaking pipes and joints"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                    />
+                  </div>
+
+                  <Input
+                    label="Base price"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    value={serviceForm.basePrice}
                     onChange={(e) =>
-                      updateServiceField("categoryId", e.target.value)
+                      updateServiceField("basePrice", e.target.value)
                     }
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+                    placeholder="45.00"
+                  />
+
+                  <Button
+                    type="submit"
+                    isLoading={creatingService}
+                    className="w-full"
                   >
-                    <option value="">Select a category</option>
-                    {categories.map((category) => (
-                      <option key={category.id} value={category.id}>
-                        {category.categoryName}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-1 block text-sm font-medium text-gray-700">
-                  Description
-                </label>
-                <textarea
-                  value={serviceForm.description}
-                  onChange={(e) =>
-                    updateServiceField("description", e.target.value)
-                  }
-                  rows={4}
-                  placeholder="Fixing leaking pipes and joints"
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-                />
-              </div>
-
-              <Input
-                label="Base price"
-                type="number"
-                min="0"
-                step="0.01"
-                value={serviceForm.basePrice}
-                onChange={(e) =>
-                  updateServiceField("basePrice", e.target.value)
-                }
-                placeholder="45.00"
-              />
-
-              <Button
-                type="submit"
-                isLoading={creatingService}
-                className="w-full"
-              >
                 Create service
               </Button>
             </form>
