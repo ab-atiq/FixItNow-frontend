@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { api, ApiError } from "@/lib/api";
 import ServiceCard from "@/components/modules/services/ServiceCard";
@@ -10,13 +9,12 @@ import { Button } from "@/components/ui/Button";
 import type { Category, Service } from "@/types";
 
 export default function ServicesPage() {
-  const searchParams = useSearchParams();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Filter states
   const [search, setSearch] = useState("");
-  const [categoryId, setCategoryId] = useState("");
+  const [category, setCategory] = useState("");
   const [location, setLocation] = useState("");
   const [rating, setRating] = useState("0");
   const [minPrice, setMinPrice] = useState("");
@@ -25,11 +23,6 @@ export default function ServicesPage() {
   // Available locations and categories
   const [locations, setLocations] = useState<string[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-
-  useEffect(() => {
-    const categoryFromUrl = searchParams.get("categoryId") ?? "";
-    setCategoryId(categoryFromUrl);
-  }, [searchParams]);
 
   // Load all services once to get unique locations
   useEffect(() => {
@@ -60,10 +53,6 @@ export default function ServicesPage() {
       });
   }, []);
 
-  const selectedCategoryName =
-    categories.find((category) => category.id === categoryId)?.categoryName ??
-    "";
-
   // Build query string with filters
   const buildQuery = useCallback(() => {
     const params = new URLSearchParams();
@@ -72,8 +61,8 @@ export default function ServicesPage() {
       params.append("search", search.trim());
     }
 
-    if (selectedCategoryName.trim()) {
-      params.append("type", selectedCategoryName.trim());
+    if (category.trim()) {
+      params.append("type", category.trim());
     }
 
     if (location.trim()) {
@@ -94,7 +83,7 @@ export default function ServicesPage() {
 
     const queryString = params.toString();
     return queryString ? "/services?" + queryString : "/services";
-  }, [search, selectedCategoryName, location, rating, minPrice, maxPrice]);
+  }, [search, category, location, rating, minPrice, maxPrice]);
 
   // Fetch services when filters change
   useEffect(() => {
@@ -119,7 +108,7 @@ export default function ServicesPage() {
 
   const handleReset = () => {
     setSearch("");
-    setCategoryId("");
+    setCategory("");
     setLocation("");
     setRating("0");
     setMinPrice("");
@@ -153,14 +142,17 @@ export default function ServicesPage() {
               Category
             </label>
             <select
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
               className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
             >
               <option value="">All categories</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.categoryName}
+              {categories.map((categoryOption) => (
+                <option
+                  key={categoryOption.id}
+                  value={categoryOption.categoryName}
+                >
+                  {categoryOption.categoryName}
                 </option>
               ))}
             </select>
