@@ -1,27 +1,35 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Search } from "lucide-react";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { api, ApiError } from "@/lib/api";
 import ServiceCard from "@/components/modules/services/ServiceCard";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
-import type { Service } from "@/types";
+import type { Category, Service } from "@/types";
 
 export default function ServicesPage() {
+  const searchParams = useSearchParams();
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Filter states
-  const [type, setType] = useState("");
+  const [search, setSearch] = useState("");
+  const [categoryId, setCategoryId] = useState("");
   const [location, setLocation] = useState("");
   const [rating, setRating] = useState("0");
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
 
-  // Available locations
+  // Available locations and categories
   const [locations, setLocations] = useState<string[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    const categoryFromUrl = searchParams.get("categoryId") ?? "";
+    setCategoryId(categoryFromUrl);
+  }, [searchParams]);
 
   // Load all services once to get unique locations
   useEffect(() => {
@@ -40,14 +48,32 @@ export default function ServicesPage() {
       .catch((err) => {
         console.error("Failed to load locations:", err);
       });
+
+    api
+      .get<Category[]>("/categories", { auth: false })
+      .then((data) => {
+        setCategories(Array.isArray(data) ? data : []);
+      })
+      .catch((err) => {
+        console.error("Failed to load categories:", err);
+        setCategories([]);
+      });
   }, []);
+
+  const selectedCategoryName =
+    categories.find((category) => category.id === categoryId)?.categoryName ??
+    "";
 
   // Build query string with filters
   const buildQuery = useCallback(() => {
     const params = new URLSearchParams();
 
-    if (type.trim()) {
-      params.append("type", type.trim());
+    if (search.trim()) {
+      params.append("search", search.trim());
+    }
+
+    if (selectedCategoryName.trim()) {
+      params.append("type", selectedCategoryName.trim());
     }
 
     if (location.trim()) {
@@ -68,7 +94,7 @@ export default function ServicesPage() {
 
     const queryString = params.toString();
     return queryString ? "/services?" + queryString : "/services";
-  }, [type, location, rating, minPrice, maxPrice]);
+  }, [search, selectedCategoryName, location, rating, minPrice, maxPrice]);
 
   // Fetch services when filters change
   useEffect(() => {
@@ -92,7 +118,8 @@ export default function ServicesPage() {
   }, [buildQuery]);
 
   const handleReset = () => {
-    setType("");
+    setSearch("");
+    setCategoryId("");
     setLocation("");
     setRating("0");
     setMinPrice("");
@@ -100,7 +127,7 @@ export default function ServicesPage() {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
+    <div className="mx-auto max-w-8xl px-4 py-12">
       <h1 className="mb-6 text-2xl font-bold text-gray-900">Browse Services</h1>
 
       {/* Filters Section */}
@@ -108,17 +135,35 @@ export default function ServicesPage() {
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Filters</h2>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-          {/* Service Type Search */}
+          {/* Service Name Search */}
           <div>
             <label className="mb-2 block text-sm font-medium text-gray-700">
-              Service Type
+              Service Name
             </label>
             <Input
-              placeholder="e.g., Plumbing"
-              value={type}
-              onChange={(e) => setType(e.target.value)}
+              placeholder="e.g., Floor Cleaning"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="w-full"
             />
+          </div>
+          {/* Service Category Filter */}
+          <div>
+            <label className="mb-2 block text-sm font-medium text-gray-700">
+              Category
+            </label>
+            <select
+              value={categoryId}
+              onChange={(e) => setCategoryId(e.target.value)}
+              className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
+            >
+              <option value="">All categories</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.categoryName}
+                </option>
+              ))}
+            </select>
           </div>
 
           {/* Location Filter */}
